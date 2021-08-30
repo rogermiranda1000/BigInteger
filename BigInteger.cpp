@@ -20,14 +20,50 @@ BigInteger operator*(const BigInteger &a, const BigInteger &b) {
     while (cpyB > 0) {
         // we're checking the lsb of b; we shift b until there's nothing left
 
-        if (cpyB._values[0] & 0x01) {
-            //result += cpyA;
-        }
+        if (cpyB._values[0] & 0x01) result += cpyA;
 
         cpyB >>= 1;
         cpyA <<= 1; // each bit of B "shifts" the addition
     }
     return result;
+}
+
+BigInteger operator+(const BigInteger &a, const BigInteger &b) {
+    // TODO negative
+    BigInteger result, add;
+    // pick the biggest one
+    if (a._values.size() > b._values.size()) {
+        result = a;
+        add = b;
+    }
+    else {
+        result = b;
+        add = a;
+    }
+
+    bool overflow = false;
+    size_t x;
+    for (x = 0; x < add._values.size(); x++) {
+        std::feclearexcept(FE_OVERFLOW);
+        if (overflow) result._values[x]++;
+        result._values[x] += add._values[x];
+        overflow = (bool)std::fetestexcept(FE_OVERFLOW);
+    }
+    while (overflow) {
+        std::feclearexcept(FE_OVERFLOW);
+        if (result._values.size() < x) result._values[x]++;
+        else result._values.push_back(1);
+        overflow = (bool)std::fetestexcept(FE_OVERFLOW);
+        x++;
+    }
+    return result;
+}
+
+BigInteger &BigInteger::operator+=(const BigInteger &a) {
+    BigInteger tmp = (*this+a);
+    this->_values = tmp._values;
+    this->_negative = tmp._negative;
+    return *this;
 }
 
 bool operator>(const BigInteger &a, const BigInteger &b) {
@@ -80,7 +116,7 @@ BigInteger operator<<(const BigInteger &a, unsigned long b) {
     shift = sizeof(unsigned long long)-reminder;
 
     result._values[result._values.size()-1] <<= reminder;
-    for (long x = result._values.size()-2; x >= n /* from 0 (if n > 0) to n-1 it's all 0 */; x--) {
+    for (long x = result._values.size()-2; x >= (long)n /* from 0 (if n > 0) to n-1 it's all 0 */; x--) {
         // the upper bits must be shifted
         result._values[x+1] |= result._values[x] >> shift;
         result._values[x] <<= reminder;

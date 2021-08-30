@@ -2,6 +2,7 @@
 
 #include <deque>
 #include <string>
+#include <cfenv>
 
 class BigInteger {
 public:
@@ -13,6 +14,8 @@ public:
     };
     BigInteger(int value) : BigInteger((long long)value) {};
 
+    friend BigInteger operator+(const BigInteger &a, const BigInteger &b);
+    BigInteger &operator+=(const BigInteger &a);
     friend BigInteger operator*(const BigInteger &a, const BigInteger &b);
     friend bool operator>(const BigInteger &a, const BigInteger &b);
     friend BigInteger operator>>(const BigInteger &a, unsigned long b);
