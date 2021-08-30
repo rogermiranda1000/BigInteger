@@ -2,9 +2,11 @@
 
 #include <deque>
 #include <string>
+#include <cfenv>
 
 class BigInteger {
 public:
+    BigInteger();
     BigInteger(const BigInteger &cpy) = default;
     BigInteger(unsigned long long value);
     BigInteger(long long value) : BigInteger((unsigned long long)value) {
@@ -12,9 +14,14 @@ public:
     };
     BigInteger(int value) : BigInteger((long long)value) {};
 
+    friend BigInteger operator+(const BigInteger &a, const BigInteger &b);
+    BigInteger &operator+=(const BigInteger &a);
     friend BigInteger operator*(const BigInteger &a, const BigInteger &b);
     friend bool operator>(const BigInteger &a, const BigInteger &b);
     friend BigInteger operator>>(const BigInteger &a, unsigned long b);
+    BigInteger &operator>>=(unsigned long a);
+    friend BigInteger operator<<(const BigInteger &a, unsigned long b);
+    BigInteger &operator<<=(unsigned long a);
     friend std::ostream &operator<<(std::ostream &str, const BigInteger &v);
 
 private:
