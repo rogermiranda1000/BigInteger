@@ -25,6 +25,7 @@ BigInteger operator*(const BigInteger &a, const BigInteger &b) {
         cpyB >>= 1;
         cpyA <<= 1; // each bit of B "shifts" the addition
     }
+    result._negative = a._negative ^ b._negative;
     return result;
 }
 
